@@ -1,11 +1,11 @@
 class Solution {
-    int[][] dp;
+    int[] dp;
     public int maxScore(int[] nums) {
         int n = nums.length;
         int st = (1 << n) - 1;
-        dp = new int[nums.length / 2 + 2][st + 1];
-        for(int[] p : dp) Arrays.fill(p, -1);
-        return dfs(nums, 1, st);
+        dp = new int[st + 1];
+        Arrays.fill(dp, -1);
+        return dfs(nums, st);
     }
     
     public int gcd(int a, int b) {
@@ -15,14 +15,15 @@ class Solution {
             return gcd(b, a % b);
     }
     
-    public int dfs(int[] nums, int ith, int st) {
+    public int dfs(int[] nums, int st) {
         if(st == 0) {
             return 0;
         }
         
-        if(dp[ith][st] != -1) {
-            return dp[ith][st];
+        if(dp[st] != -1) {
+            return dp[st];
         }
+        int ith = (nums.length - Integer.bitCount(st)) / 2 + 1;
         
         int ans = 0;
         for(int i = 0; i < nums.length; i++) {
@@ -30,10 +31,10 @@ class Solution {
                 if(((st & (1 << i)) > 0) && ((st & (1 << j)) > 0)) {
                     int newst = st ^ (1 << i);
                     newst ^= (1 << j);
-                    ans = Math.max(ans, ith * gcd(nums[i], nums[j]) + dfs(nums, ith + 1, newst));
+                    ans = Math.max(ans, ith * gcd(nums[i], nums[j]) + dfs(nums, newst));
                 }
             }
         }
-        return dp[ith][st] = ans;
+        return dp[st] = ans;
     }
 }
